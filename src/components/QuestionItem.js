@@ -10,9 +10,11 @@ function QuestionItem({ question, onUpdate, onDelete }) {
       .then((response) => {
         if (response.ok) {
           onDelete(id); // Call the onDelete handler with the question id
+        } else {
+          alert("Failed to delete question on the server");
         }
       })
-      .catch((error) => console.error("Error deleting question:", error));
+      .catch((error) => alert("Error deleting question:", error));
   }
 
   function handleAnswerChange(event) {
@@ -25,11 +27,16 @@ function QuestionItem({ question, onUpdate, onDelete }) {
       },
       body: JSON.stringify({ correctIndex: newCorrectIndex }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to update question on the server");
+        }
+      })
       .then((updatedQuestion) => onUpdate(updatedQuestion)) // Call the onUpdate handler with the updated question data
-      .catch((error) => console.error("Error updating question:", error));
+      .catch((error) => alert("Error updating question:", error));
   }
-  
 
   const options = answers.map((answer, index) => (
     <option key={index} value={index}>
@@ -43,8 +50,8 @@ function QuestionItem({ question, onUpdate, onDelete }) {
       <h5>Prompt: {prompt}</h5>
       <label>
         Correct Answer:
-        <select value={correctIndex}
-        onChange={handleAnswerChange}>{options}
+        <select value={correctIndex !== undefined ? correctIndex : 0} onChange={handleAnswerChange}>
+          {options}
         </select>
       </label>
       <button onClick={handleDeleteClick}>Delete Question</button>

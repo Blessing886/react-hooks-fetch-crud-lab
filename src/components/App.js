@@ -7,8 +7,10 @@ function App() {
   const [page, setPage] = useState("List");
   const [questions, setQuestions] = useState([]);
 
-  function handleAddQuestion(newQuestion) {
-    setQuestions([...questions, newQuestion]);
+  function handleUpdateAnswer(questionId, newCorrectAnswer) {
+    setQuestions(questions.map((question) =>
+      question.id === questionId ? { ...question, correctAnswer: newCorrectAnswer } : question
+    ));
   }
 
   useEffect(() => {
@@ -24,7 +26,8 @@ function App() {
       {page === "Form" ? (
         <QuestionForm setQuestions={setQuestions} questions={questions} />
         ) : (
-        <QuestionList questions={questions} setQuestions={setQuestions} />
+        <QuestionList questions={questions} setQuestions={setQuestions}
+        handleUpdateAnswer={handleUpdateAnswer} />
         )}
     </main>
   );
